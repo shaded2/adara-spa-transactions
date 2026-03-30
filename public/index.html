@@ -4,28 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Adara Spa — Service Transactions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --brand: #9b6fa8;
-      --brand-light: #e8d8f0;
-      --brand-dark: #6b4a78;
-      --bg: #faf8fc;
+      --brand: #4a6741;
+      --brand-light: #eaf2e6;
+      --brand-dark: #374f30;
+      --accent: #b99229;
+      --bg: #faf8f3;
       --surface: #ffffff;
-      --border: #e2d9ea;
-      --text: #2d2034;
-      --text-muted: #7a6882;
+      --border: #e5ddd0;
+      --text: #2c2a26;
+      --text-muted: #7a7060;
       --success: #2e7d32;
       --success-bg: #e8f5e9;
       --error: #c62828;
       --error-bg: #ffebee;
       --radius: 12px;
-      --shadow: 0 2px 12px rgba(107, 74, 120, 0.08);
+      --shadow: 0 2px 16px rgba(74, 103, 65, 0.08);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -34,42 +38,47 @@
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 1px 4px rgba(107, 74, 120, 0.06);
+      box-shadow: 0 1px 6px rgba(74, 103, 65, 0.07);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .logo-icon {
-      width: 36px;
-      height: 36px;
-      background: var(--brand);
-      border-radius: 8px;
+    .logo-leaf {
+      width: 38px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      font-size: 18px;
+    }
+
+    .logo-leaf svg {
+      width: 38px;
+      height: 38px;
     }
 
     .logo-text {
-      font-size: 18px;
-      font-weight: 700;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 600;
       color: var(--brand-dark);
+      letter-spacing: 0.02em;
+      line-height: 1;
     }
 
     .logo-sub {
-      font-size: 11px;
+      font-size: 10px;
       color: var(--text-muted);
-      letter-spacing: 0.05em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
+      margin-top: 2px;
     }
 
     .header-date {
@@ -105,10 +114,11 @@
       border: none;
       background: transparent;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--text-muted);
       transition: all 0.15s;
+      font-family: inherit;
     }
 
     .period-tabs button:not(:last-child) {
@@ -141,6 +151,7 @@
       font-size: 13px;
       color: var(--text);
       background: transparent;
+      font-family: inherit;
     }
 
     .custom-range span {
@@ -157,6 +168,7 @@
       cursor: pointer;
       font-size: 13px;
       font-weight: 500;
+      font-family: inherit;
     }
 
     .custom-range button:hover {
@@ -174,6 +186,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      font-family: inherit;
     }
 
     .refresh-btn:hover {
@@ -181,6 +194,7 @@
       color: var(--brand);
     }
 
+    /* Stats */
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -197,25 +211,126 @@
     }
 
     .stat-label {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
       margin-bottom: 8px;
     }
 
     .stat-value {
-      font-size: 28px;
-      font-weight: 700;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 600;
       color: var(--brand-dark);
+      line-height: 1;
     }
 
     .stat-sub {
       font-size: 12px;
       color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    /* Section label (italic gold) */
+    .section-eyebrow {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 15px;
+      color: var(--accent);
+      letter-spacing: 0.06em;
+      display: block;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    /* Service breakdown card */
+    .service-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.01em;
+    }
+
+    .badge {
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 0;
+    }
+
+    .service-item {
+      padding: 16px 20px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .service-item:nth-child(n) {
+      border-right: 1px solid var(--border);
+    }
+
+    .service-item-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .service-item-revenue {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--brand-dark);
+      line-height: 1;
+    }
+
+    .service-item-count {
+      font-size: 11px;
+      color: var(--text-muted);
       margin-top: 4px;
     }
 
+    .service-bar {
+      height: 3px;
+      background: var(--brand-light);
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .service-bar-fill {
+      height: 100%;
+      background: var(--brand);
+      border-radius: 2px;
+    }
+
+    /* Transaction table */
     .table-card {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -233,18 +348,9 @@
     }
 
     .table-title {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--text);
-    }
-
-    .badge {
-      background: var(--brand-light);
-      color: var(--brand-dark);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 20px;
     }
 
     table {
@@ -253,13 +359,13 @@
     }
 
     thead th {
-      padding: 12px 20px;
+      padding: 11px 20px;
       text-align: left;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.07em;
       background: var(--bg);
       border-bottom: 1px solid var(--border);
     }
@@ -278,7 +384,7 @@
     }
 
     tbody td {
-      padding: 14px 20px;
+      padding: 13px 20px;
       font-size: 14px;
       color: var(--text);
     }
@@ -298,9 +404,10 @@
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       flex-shrink: 0;
+      letter-spacing: 0.03em;
     }
 
     .client-name {
@@ -327,7 +434,7 @@
       gap: 4px;
       padding: 3px 10px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 500;
     }
 
@@ -358,12 +465,13 @@
     }
 
     .empty-icon {
-      font-size: 40px;
+      font-size: 36px;
       margin-bottom: 12px;
     }
 
     .empty-title {
-      font-size: 16px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
       font-weight: 600;
       color: var(--text);
       margin-bottom: 6px;
@@ -376,11 +484,12 @@
     .loading {
       text-align: center;
       padding: 60px 20px;
+      color: var(--text-muted);
     }
 
     .spinner {
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border: 3px solid var(--brand-light);
       border-top-color: var(--brand);
       border-radius: 50%;
@@ -418,24 +527,29 @@
     }
 
     #error-container { display: none; }
-
-    .period-label {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
+    #service-card { display: none; }
 
     @media (max-width: 640px) {
       .controls { flex-direction: column; align-items: flex-start; }
       .custom-range { flex-wrap: wrap; }
       thead th:nth-child(4),
       tbody td:nth-child(4) { display: none; }
+      .service-grid { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="logo">
-      <div class="logo-icon">🌸</div>
+      <div class="logo-leaf">
+        <svg viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="19" cy="19" rx="19" ry="19" fill="#eaf2e6"/>
+          <path d="M19 8 C19 8 10 14 10 22 C10 27.5 14 31 19 31 C24 31 28 27.5 28 22 C28 14 19 8 19 8Z" fill="#4a6741"/>
+          <path d="M19 31 L19 15" stroke="#eaf2e6" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M19 22 C19 22 15 20 14 17" stroke="#eaf2e6" stroke-width="1" stroke-linecap="round"/>
+          <path d="M19 19 C19 19 23 17 24 14" stroke="#eaf2e6" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div>
         <div class="logo-text">Adara Spa</div>
         <div class="logo-sub">Service Transactions</div>
@@ -490,6 +604,14 @@
       </div>
     </div>
 
+    <div class="service-card" id="service-card">
+      <div class="card-header">
+        <span class="card-title">Revenue by Service</span>
+        <span class="badge" id="service-badge">0 services</span>
+      </div>
+      <div class="service-grid" id="service-grid"></div>
+    </div>
+
     <div class="table-card">
       <div class="table-header">
         <span class="table-title">Transaction History</span>
@@ -498,7 +620,7 @@
       <div id="table-container">
         <div class="loading">
           <div class="spinner"></div>
-          <div>Loading transactions...</div>
+          <div>Loading transactions…</div>
         </div>
       </div>
     </div>
@@ -508,12 +630,10 @@
     let currentPeriod = 'daily';
     let customRange = null;
 
-    // Set today's date in header
     document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    // Set default dates for custom range
     const today = new Date();
     const weekAgo = new Date(today);
     weekAgo.setDate(weekAgo.getDate() - 7);
@@ -552,11 +672,7 @@
       try {
         const res = await fetch(url);
         const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || `HTTP ${res.status}`);
-        }
-
+        if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
         renderTransactions(data);
       } catch (err) {
         showError('Failed to load transactions', err.message);
@@ -568,7 +684,6 @@
       const transactions = data?.data || data?.transactions || [];
       const container = document.getElementById('table-container');
 
-      // Update stats
       const paid = transactions.filter(t => t.status === 'paid' || t.status === 'succeeded');
       const total = paid.reduce((sum, t) => sum + (t.amount || 0), 0);
       const avg = paid.length > 0 ? total / paid.length : 0;
@@ -578,10 +693,28 @@
       document.getElementById('stat-avg').textContent = paid.length > 0 ? formatCurrency(avg) : '—';
       document.getElementById('table-badge').textContent = transactions.length;
 
+      // Build revenue-by-service from line items
+      const serviceMap = {};
+      transactions.forEach(t => {
+        const lineItems = t.chargeSnapshot?.lineItems?.lineItem;
+        if (!lineItems?.length) return;
+        lineItems.forEach(li => {
+          const name = li.name;
+          if (!name) return;
+          const rev = (li.unitPrice || 0) * (li.quantity || 1);
+          if (!serviceMap[name]) serviceMap[name] = { revenue: 0, count: 0 };
+          serviceMap[name].revenue += rev;
+          serviceMap[name].count += (li.quantity || 1);
+        });
+      });
+
+      const serviceBreakdown = Object.entries(serviceMap).sort((a, b) => b[1].revenue - a[1].revenue);
+      renderServiceBreakdown(serviceBreakdown);
+
       if (transactions.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <div class="empty-icon">🌸</div>
+            <div class="empty-icon">🌿</div>
             <div class="empty-title">No transactions found</div>
             <div class="empty-desc">There are no service transactions for the selected period.</div>
           </div>
@@ -637,6 +770,33 @@
       `;
     }
 
+    function renderServiceBreakdown(breakdown) {
+      const card = document.getElementById('service-card');
+      const grid = document.getElementById('service-grid');
+      const badge = document.getElementById('service-badge');
+
+      if (breakdown.length === 0) {
+        card.style.display = 'none';
+        return;
+      }
+
+      card.style.display = 'block';
+      const maxRevenue = breakdown[0][1].revenue;
+      badge.textContent = `${breakdown.length} service${breakdown.length !== 1 ? 's' : ''}`;
+
+      grid.innerHTML = breakdown.map(([name, { revenue, count }]) => {
+        const pct = maxRevenue > 0 ? Math.round((revenue / maxRevenue) * 100) : 0;
+        return `
+          <div class="service-item">
+            <div class="service-item-name">${escapeHtml(name)}</div>
+            <div class="service-item-revenue">${formatCurrency(revenue)}</div>
+            <div class="service-item-count">${count} booking${count !== 1 ? 's' : ''}</div>
+            <div class="service-bar"><div class="service-bar-fill" style="width:${pct}%"></div></div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function statusBadge(status) {
       const map = {
         paid: ['status-paid', '✓ Paid'],
@@ -649,12 +809,12 @@
       return `<span class="status-badge ${cls}">${label}</span>`;
     }
 
-    function formatCurrency(amountInDollars, currency = 'USD') {
+    function formatCurrency(amount, currency = 'USD') {
       return new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency,
         minimumFractionDigits: 2,
-      }).format(amountInDollars);
+      }).format(amount);
     }
 
     function formatDate(date) {
@@ -674,7 +834,7 @@
       document.getElementById('table-container').innerHTML = `
         <div class="loading">
           <div class="spinner"></div>
-          <div>Loading transactions...</div>
+          <div>Loading transactions…</div>
         </div>
       `;
     }
@@ -690,10 +850,7 @@
       document.getElementById('error-container').style.display = 'none';
     }
 
-    // Load on page open
     loadTransactions();
-
-    // Auto-refresh every 5 minutes
     setInterval(loadTransactions, 5 * 60 * 1000);
   </script>
 </body>
