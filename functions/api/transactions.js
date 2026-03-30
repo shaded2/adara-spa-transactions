@@ -1,10 +1,16 @@
 /**
  * Cloudflare Pages Function: /api/transactions
- * Proxies GHL payment transactions for Adara Spa
+ * Proxies GHL payment transactions for Adara Spa, enriched with order line items.
  */
 
 const GHL_API_BASE = "https://services.leadconnectorhq.com";
 const GHL_API_VERSION = "2021-07-28";
+
+const GHL_HEADERS = (apiKey) => ({
+  Authorization: `Bearer ${apiKey}`,
+  Version: GHL_API_VERSION,
+  "Content-Type": "application/json",
+});
 
 export async function onRequestGet(context) {
   const { env, request } = context;
@@ -20,19 +26,16 @@ export async function onRequestGet(context) {
   if (!apiKey) {
     return new Response(
       JSON.stringify({ error: "Server configuration missing" }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
 
-  // Calculate date range based on period
   const { startAt, endAt } = customStart && customEnd
     ? { startAt: customStart, endAt: customEnd }
     : getDateRange(period);
 
   try {
+    // 1. Fetch transactions list
     const params = new URLSearchParams({
       altId: locationId,
       altType: "location",
@@ -41,48 +44,72 @@ export async function onRequestGet(context) {
       limit: "100",
     });
 
-    const response = await fetch(
+    const txRes = await fetch(
       `${GHL_API_BASE}/payments/transactions?${params}`,
-      {
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          Version: GHL_API_VERSION,
-          "Content-Type": "application/json",
-        },
-      }
+      { headers: GHL_HEADERS(apiKey) }
     );
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      console.error("GHL API error:", response.status, errorBody);
+    if (!txRes.ok) {
+      const errorBody = await txRes.text();
+      console.error("GHL transactions error:", txRes.status, errorBody);
       return new Response(
-        JSON.stringify({
-          error: "GHL API error",
-          status: response.status,
-          message: errorBody,
-        }),
-        {
-          status: response.status,
-          headers: corsHeaders(),
-        }
+        JSON.stringify({ error: "GHL API error", status: txRes.status, message: errorBody }),
+        { status: txRes.status, headers: corsHeaders() }
       );
     }
 
-    const data = await response.json();
+    const data = await txRes.json();
+    const transactions = data?.data || [];
+
+    // 2. For transactions without chargeSnapshot line items, fetch their order to get items
+    const needsEnrichment = transactions.filter(
+      t => t.entityType === "order" && t.entityId && !t.chargeSnapshot?.lineItems
+    );
+
+    if (needsEnrichment.length > 0) {
+      const orderResults = await Promise.all(
+        needsEnrichment.map(t => fetchOrder(t.entityId, apiKey))
+      );
+
+      // Merge order items back into transactions by entityId
+      const orderMap = {};
+      needsEnrichment.forEach((t, i) => {
+        if (orderResults[i]) orderMap[t.entityId] = orderResults[i];
+      });
+
+      transactions.forEach(t => {
+        if (orderMap[t.entityId]) {
+          t._orderItems = orderMap[t.entityId];
+        }
+      });
+    }
+
     return new Response(JSON.stringify(data), {
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders(),
-      },
+      headers: { "Content-Type": "application/json", ...corsHeaders() },
     });
   } catch (err) {
     return new Response(
       JSON.stringify({ error: "Internal server error", message: err.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders() },
-      }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders() } }
     );
+  }
+}
+
+async function fetchOrder(orderId, apiKey) {
+  try {
+    const res = await fetch(
+      `${GHL_API_BASE}/payments/orders/${orderId}`,
+      { headers: GHL_HEADERS(apiKey) }
+    );
+    if (!res.ok) return null;
+    const body = await res.json();
+    // GHL returns the order either at root or under .order
+    const order = body?.order || body;
+    // Items may be under .items or .lineItems
+    const items = order?.items || order?.lineItems || [];
+    return items.length > 0 ? items : null;
+  } catch {
+    return null;
   }
 }
 
@@ -92,20 +119,17 @@ function getDateRange(period) {
 
   switch (period) {
     case "daily": {
-      // Today: midnight to now
       startAt = new Date(now);
       startAt.setHours(0, 0, 0, 0);
       break;
     }
     case "weekly": {
-      // Last 7 days
       startAt = new Date(now);
       startAt.setDate(startAt.getDate() - 7);
       startAt.setHours(0, 0, 0, 0);
       break;
     }
     case "monthly": {
-      // Last 30 days
       startAt = new Date(now);
       startAt.setDate(startAt.getDate() - 30);
       startAt.setHours(0, 0, 0, 0);
@@ -131,7 +155,5 @@ function corsHeaders() {
 }
 
 export async function onRequestOptions() {
-  return new Response(null, {
-    headers: corsHeaders(),
-  });
+  return new Response(null, { headers: corsHeaders() });
 }

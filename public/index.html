@@ -693,18 +693,21 @@
       document.getElementById('stat-avg').textContent = paid.length > 0 ? formatCurrency(avg) : '—';
       document.getElementById('table-badge').textContent = transactions.length;
 
-      // Build revenue-by-service from line items
+      // Build revenue-by-service from line items (both Authorize.net and order-enriched)
       const serviceMap = {};
       transactions.forEach(t => {
-        const lineItems = t.chargeSnapshot?.lineItems?.lineItem;
-        if (!lineItems?.length) return;
-        lineItems.forEach(li => {
-          const name = li.name;
+        const snapItems = t.chargeSnapshot?.lineItems?.lineItem || [];
+        const orderItems = t._orderItems || [];
+        // Prefer snap items (have unitPrice); fall back to order items (have price/qty)
+        const items = snapItems.length > 0 ? snapItems : orderItems;
+        items.forEach(li => {
+          const name = li.name || li.title || li.productName;
           if (!name) return;
-          const rev = (li.unitPrice || 0) * (li.quantity || 1);
+          const qty = li.quantity || li.qty || 1;
+          const rev = (li.unitPrice || li.price || 0) * qty;
           if (!serviceMap[name]) serviceMap[name] = { revenue: 0, count: 0 };
           serviceMap[name].revenue += rev;
-          serviceMap[name].count += (li.quantity || 1);
+          serviceMap[name].count += qty;
         });
       });
 
@@ -726,10 +729,15 @@
         const clientName = t.contactName || t.contactDetails?.name || t.contact?.name || 'Guest';
         const clientEmail = t.contactEmail || t.contactDetails?.email || t.contact?.email || '';
         const initials = clientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        const lineItems = t.chargeSnapshot?.lineItems?.lineItem;
-        const serviceName = (lineItems?.length > 0)
-          ? lineItems.map(li => li.name).filter(Boolean).join(' + ')
-          : (t.entitySourceName || t.entityDetails?.title || t.sourceName || t.description || 'Service');
+        // chargeSnapshot.lineItems.lineItem → Authorize.net transactions
+        // _orderItems → manual/cash transactions enriched from GHL orders API
+        const snapItems = t.chargeSnapshot?.lineItems?.lineItem;
+        const orderItems = t._orderItems;
+        const serviceName = snapItems?.length > 0
+          ? snapItems.map(li => li.name).filter(Boolean).join(' + ')
+          : orderItems?.length > 0
+            ? orderItems.map(li => li.name || li.title || li.productName).filter(Boolean).join(' + ')
+            : (t.entitySourceName || t.entityDetails?.title || t.sourceName || t.description || 'Service');
         const amount = t.amount || 0;
         const currency = t.currency || 'USD';
         const status = t.status || 'unknown';
