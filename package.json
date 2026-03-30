@@ -1,0 +1,13 @@
+{
+  "name": "adara-spa-transactions",
+  "version": "1.0.0",
+  "description": "Service transaction viewer for Adara Spa — Cloudflare Pages app",
+  "private": true,
+  "scripts": {
+    "dev": "npx wrangler pages dev public --compatibility-date=2024-01-01",
+    "deploy": "npx wrangler pages deploy public --project-name=adara-spa-transactions"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}

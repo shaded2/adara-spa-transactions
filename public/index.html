@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adara Spa — Service Transactions</title>
+  <style>
+    :root {
+      --brand: #9b6fa8;
+      --brand-light: #e8d8f0;
+      --brand-dark: #6b4a78;
+      --bg: #faf8fc;
+      --surface: #ffffff;
+      --border: #e2d9ea;
+      --text: #2d2034;
+      --text-muted: #7a6882;
+      --success: #2e7d32;
+      --success-bg: #e8f5e9;
+      --error: #c62828;
+      --error-bg: #ffebee;
+      --radius: 12px;
+      --shadow: 0 2px 12px rgba(107, 74, 120, 0.08);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 4px rgba(107, 74, 120, 0.06);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--brand);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+
+    .logo-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .header-date {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 24px;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .period-tabs {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .period-tabs button {
+      padding: 8px 20px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.15s;
+    }
+
+    .period-tabs button:not(:last-child) {
+      border-right: 1px solid var(--border);
+    }
+
+    .period-tabs button.active {
+      background: var(--brand);
+      color: white;
+    }
+
+    .period-tabs button:hover:not(.active) {
+      background: var(--brand-light);
+      color: var(--brand-dark);
+    }
+
+    .custom-range {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+    }
+
+    .custom-range input[type="date"] {
+      border: none;
+      outline: none;
+      font-size: 13px;
+      color: var(--text);
+      background: transparent;
+    }
+
+    .custom-range span {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .custom-range button {
+      padding: 4px 12px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .custom-range button:hover {
+      background: var(--brand-dark);
+    }
+
+    .refresh-btn {
+      padding: 8px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .refresh-btn:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+
+    .stat-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .table-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .badge {
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      padding: 12px 20px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.1s;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--brand-light);
+    }
+
+    tbody td {
+      padding: 14px 20px;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .client-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .client-name {
+      font-weight: 500;
+    }
+
+    .client-email {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .service-name {
+      font-weight: 500;
+    }
+
+    .amount {
+      font-weight: 600;
+      color: var(--success);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .status-paid {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .status-pending {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .status-failed {
+      background: var(--error-bg);
+      color: var(--error);
+    }
+
+    .date-cell {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .empty-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .empty-desc {
+      font-size: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--brand-light);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-state {
+      background: var(--error-bg);
+      border: 1px solid #f8bbd0;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .error-icon { font-size: 18px; flex-shrink: 0; }
+
+    .error-text strong {
+      display: block;
+      font-size: 14px;
+      color: var(--error);
+      margin-bottom: 4px;
+    }
+
+    .error-text span {
+      font-size: 13px;
+      color: #c62828;
+    }
+
+    #error-container { display: none; }
+
+    .period-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 640px) {
+      .controls { flex-direction: column; align-items: flex-start; }
+      .custom-range { flex-wrap: wrap; }
+      thead th:nth-child(4),
+      tbody td:nth-child(4) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🌸</div>
+      <div>
+        <div class="logo-text">Adara Spa</div>
+        <div class="logo-sub">Service Transactions</div>
+      </div>
+    </div>
+    <div class="header-date" id="header-date"></div>
+  </header>
+
+  <main>
+    <div class="controls">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <div class="period-tabs">
+          <button class="active" data-period="daily" onclick="setPeriod('daily',this)">Today</button>
+          <button data-period="weekly" onclick="setPeriod('weekly',this)">7 Days</button>
+          <button data-period="monthly" onclick="setPeriod('monthly',this)">30 Days</button>
+        </div>
+        <div class="custom-range">
+          <input type="date" id="start-date" />
+          <span>–</span>
+          <input type="date" id="end-date" />
+          <button onclick="applyCustomRange()">Go</button>
+        </div>
+      </div>
+      <button class="refresh-btn" onclick="loadTransactions()">
+        <span>↻</span> Refresh
+      </button>
+    </div>
+
+    <div id="error-container" class="error-state">
+      <span class="error-icon">⚠️</span>
+      <div class="error-text">
+        <strong id="error-title">Error loading transactions</strong>
+        <span id="error-detail"></span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value" id="stat-revenue">—</div>
+        <div class="stat-sub" id="stat-period-label">Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Transactions</div>
+        <div class="stat-value" id="stat-count">—</div>
+        <div class="stat-sub">Paid services</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average Ticket</div>
+        <div class="stat-value" id="stat-avg">—</div>
+        <div class="stat-sub">Per transaction</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <span class="table-title">Transaction History</span>
+        <span class="badge" id="table-badge">0</span>
+      </div>
+      <div id="table-container">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading transactions...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentPeriod = 'daily';
+    let customRange = null;
+
+    // Set today's date in header
+    document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Set default dates for custom range
+    const today = new Date();
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    document.getElementById('end-date').value = today.toISOString().split('T')[0];
+    document.getElementById('start-date').value = weekAgo.toISOString().split('T')[0];
+
+    function setPeriod(period, btn) {
+      currentPeriod = period;
+      customRange = null;
+      document.querySelectorAll('.period-tabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const labels = { daily: 'Today', weekly: 'Last 7 Days', monthly: 'Last 30 Days' };
+      document.getElementById('stat-period-label').textContent = labels[period] || period;
+      loadTransactions();
+    }
+
+    function applyCustomRange() {
+      const start = document.getElementById('start-date').value;
+      const end = document.getElementById('end-date').value;
+      if (!start || !end) return;
+      customRange = { start, end };
+      document.querySelectorAll('.period-tabs button').forEach(b => b.classList.remove('active'));
+      document.getElementById('stat-period-label').textContent = `${start} – ${end}`;
+      loadTransactions();
+    }
+
+    async function loadTransactions() {
+      showLoading();
+      hideError();
+
+      let url = `/api/transactions?period=${currentPeriod}`;
+      if (customRange) {
+        url = `/api/transactions?startAt=${customRange.start}T00:00:00.000Z&endAt=${customRange.end}T23:59:59.999Z`;
+      }
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || `HTTP ${res.status}`);
+        }
+
+        renderTransactions(data);
+      } catch (err) {
+        showError('Failed to load transactions', err.message);
+        renderTransactions(null);
+      }
+    }
+
+    function renderTransactions(data) {
+      const transactions = data?.data || data?.transactions || [];
+      const container = document.getElementById('table-container');
+
+      // Update stats
+      const paid = transactions.filter(t => t.status === 'paid' || t.status === 'succeeded');
+      const total = paid.reduce((sum, t) => sum + (t.amount || 0), 0);
+      const avg = paid.length > 0 ? total / paid.length : 0;
+
+      document.getElementById('stat-revenue').textContent = formatCurrency(total);
+      document.getElementById('stat-count').textContent = paid.length;
+      document.getElementById('stat-avg').textContent = paid.length > 0 ? formatCurrency(avg) : '—';
+      document.getElementById('table-badge').textContent = transactions.length;
+
+      if (transactions.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🌸</div>
+            <div class="empty-title">No transactions found</div>
+            <div class="empty-desc">There are no service transactions for the selected period.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const rows = transactions.map(t => {
+        const clientName = t.contactDetails?.name || t.contact?.name || 'Guest';
+        const clientEmail = t.contactDetails?.email || t.contact?.email || '';
+        const initials = clientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        const serviceName = t.entityDetails?.title || t.sourceName || t.description || 'Service';
+        const amount = t.amount || 0;
+        const currency = t.currency || 'USD';
+        const status = t.status || 'unknown';
+        const createdAt = t.createdAt ? new Date(t.createdAt) : null;
+
+        return `
+          <tr>
+            <td>
+              <div class="client-cell">
+                <div class="avatar">${initials}</div>
+                <div>
+                  <div class="client-name">${escapeHtml(clientName)}</div>
+                  ${clientEmail ? `<div class="client-email">${escapeHtml(clientEmail)}</div>` : ''}
+                </div>
+              </div>
+            </td>
+            <td><span class="service-name">${escapeHtml(serviceName)}</span></td>
+            <td><span class="amount">${formatCurrency(amount / 100, currency)}</span></td>
+            <td class="date-cell">${createdAt ? formatDate(createdAt) : '—'}</td>
+            <td>${statusBadge(status)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Service</th>
+              <th>Amount</th>
+              <th>Date &amp; Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function statusBadge(status) {
+      const map = {
+        paid: ['status-paid', '✓ Paid'],
+        succeeded: ['status-paid', '✓ Paid'],
+        pending: ['status-pending', '⏳ Pending'],
+        failed: ['status-failed', '✗ Failed'],
+        refunded: ['status-pending', '↩ Refunded'],
+      };
+      const [cls, label] = map[status] || ['status-pending', status];
+      return `<span class="status-badge ${cls}">${label}</span>`;
+    }
+
+    function formatCurrency(amountInDollars, currency = 'USD') {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 2,
+      }).format(amountInDollars);
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit'
+      });
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function showLoading() {
+      document.getElementById('table-container').innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading transactions...</div>
+        </div>
+      `;
+    }
+
+    function showError(title, detail) {
+      const c = document.getElementById('error-container');
+      c.style.display = 'flex';
+      document.getElementById('error-title').textContent = title;
+      document.getElementById('error-detail').textContent = detail || '';
+    }
+
+    function hideError() {
+      document.getElementById('error-container').style.display = 'none';
+    }
+
+    // Load on page open
+    loadTransactions();
+
+    // Auto-refresh every 5 minutes
+    setInterval(loadTransactions, 5 * 60 * 1000);
+  </script>
+</body>
+</html>
