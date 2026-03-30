@@ -593,7 +593,10 @@
         const clientName = t.contactName || t.contactDetails?.name || t.contact?.name || 'Guest';
         const clientEmail = t.contactEmail || t.contactDetails?.email || t.contact?.email || '';
         const initials = clientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        const serviceName = t.entitySourceName || t.entityDetails?.title || t.sourceName || t.description || 'Service';
+        const lineItems = t.chargeSnapshot?.lineItems?.lineItem;
+        const serviceName = (lineItems?.length > 0)
+          ? lineItems.map(li => li.name).filter(Boolean).join(' + ')
+          : (t.entitySourceName || t.entityDetails?.title || t.sourceName || t.description || 'Service');
         const amount = t.amount || 0;
         const currency = t.currency || 'USD';
         const status = t.status || 'unknown';
