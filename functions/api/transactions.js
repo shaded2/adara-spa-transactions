@@ -14,10 +14,10 @@ export async function onRequestGet(context) {
   const customStart = url.searchParams.get("startAt");
   const customEnd = url.searchParams.get("endAt");
 
-  const locationId = env.GHL_LOCATION_ID;
+  const locationId = env.GHL_LOCATION_ID || "T3ndPiD159wpeSV0zQc7";
   const apiKey = env.GHL_API_KEY;
 
-  if (!locationId || !apiKey) {
+  if (!apiKey) {
     return new Response(
       JSON.stringify({ error: "Server configuration missing" }),
       {

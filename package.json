@@ -8,6 +8,6 @@
     "deploy": "npx wrangler pages deploy public --project-name=adara-spa-transactions"
   },
   "devDependencies": {
-    "wrangler": "^3.0.0"
+    "wrangler": "^3.114.17"
   }
 }
