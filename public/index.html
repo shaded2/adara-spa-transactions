@@ -590,10 +590,10 @@
       }
 
       const rows = transactions.map(t => {
-        const clientName = t.contactDetails?.name || t.contact?.name || 'Guest';
-        const clientEmail = t.contactDetails?.email || t.contact?.email || '';
+        const clientName = t.contactName || t.contactDetails?.name || t.contact?.name || 'Guest';
+        const clientEmail = t.contactEmail || t.contactDetails?.email || t.contact?.email || '';
         const initials = clientName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        const serviceName = t.entityDetails?.title || t.sourceName || t.description || 'Service';
+        const serviceName = t.entitySourceName || t.entityDetails?.title || t.sourceName || t.description || 'Service';
         const amount = t.amount || 0;
         const currency = t.currency || 'USD';
         const status = t.status || 'unknown';
@@ -611,7 +611,7 @@
               </div>
             </td>
             <td><span class="service-name">${escapeHtml(serviceName)}</span></td>
-            <td><span class="amount">${formatCurrency(amount / 100, currency)}</span></td>
+            <td><span class="amount">${formatCurrency(amount, currency)}</span></td>
             <td class="date-cell">${createdAt ? formatDate(createdAt) : '—'}</td>
             <td>${statusBadge(status)}</td>
           </tr>

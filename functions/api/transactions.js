@@ -34,7 +34,8 @@ export async function onRequestGet(context) {
 
   try {
     const params = new URLSearchParams({
-      locationId,
+      altId: locationId,
+      altType: "location",
       startAt,
       endAt,
       limit: "100",
